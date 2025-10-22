@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui.Alerts;
+﻿using System;
+using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Grocery.App.Views;
@@ -7,6 +8,8 @@ using Grocery.Core.Models;
 using System.Collections.ObjectModel;
 using System.Text.Json;
 using System.Linq;
+using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace Grocery.App.ViewModels
 {
@@ -16,9 +19,11 @@ namespace Grocery.App.ViewModels
         private readonly IGroceryListItemsService _groceryListItemsService;
         private readonly IProductService _productService;
         private readonly IFileSaverService _fileSaverService;
+        [ObservableProperty]
+        bool hasBonusCard;
         private string searchText = "";
-        public ObservableCollection<GroceryListItem> MyGroceryListItems { get; set; } = [];
-        public ObservableCollection<Product> AvailableProducts { get; set; } = [];
+        public ObservableCollection<GroceryListItem> MyGroceryListItems { get; set; } = new();
+        public ObservableCollection<Product> AvailableProducts { get; set; } = new();
 
         [ObservableProperty]
         GroceryList groceryList = new(0, "None", DateOnly.MinValue, "", 0);
@@ -33,13 +38,25 @@ namespace Grocery.App.ViewModels
             _groceryListItemsService = groceryListItemsService;
             _productService = productService;
             _fileSaverService = fileSaverService;
+
+            // subscribe to collection changes so total price updates when items change
+            MyGroceryListItems.CollectionChanged += MyGroceryListItems_CollectionChanged;
+
             Load(groceryList.Id);
         }
 
         private void Load(int id)
         {
+            // detach existing item handlers
+            foreach (var item in MyGroceryListItems) item.PropertyChanged -= Item_PropertyChanged;
+
             MyGroceryListItems.Clear();
-            foreach (var item in _groceryListItemsService.GetAllOnGroceryListId(id)) MyGroceryListItems.Add(item);
+            foreach (var item in _groceryListItemsService.GetAllOnGroceryListId(id))
+            {
+                MyGroceryListItems.Add(item);
+                item.PropertyChanged += Item_PropertyChanged;
+            }
+
             GetAvailableProducts();
             UpdateTotalPrice();
         }
@@ -55,6 +72,41 @@ namespace Grocery.App.ViewModels
         partial void OnGroceryListChanged(GroceryList value)
         {
             Load(value.Id);
+        }
+
+        partial void OnHasBonusCardChanged(bool value)
+        {
+            UpdateTotalPrice();
+        }
+
+        private void MyGroceryListItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (GroceryListItem ni in e.NewItems)
+                {
+                    ni.PropertyChanged += Item_PropertyChanged;
+                }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (GroceryListItem oi in e.OldItems)
+                {
+                    oi.PropertyChanged -= Item_PropertyChanged;
+                }
+            }
+
+            UpdateTotalPrice();
+            GetAvailableProducts();
+        }
+
+        private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(GroceryListItem.Amount) || e.PropertyName == nameof(GroceryListItem.Product))
+            {
+                UpdateTotalPrice();
+            }
         }
 
         [RelayCommand]
@@ -108,7 +160,8 @@ namespace Grocery.App.ViewModels
             _groceryListItemsService.Update(item);
             item.Product.Stock--;
             _productService.Update(item.Product);
-            OnGroceryListChanged(GroceryList); // Load will call UpdateTotalPrice
+            OnGroceryListChanged(GroceryList); 
+  
         }
 
         [RelayCommand]
@@ -121,12 +174,17 @@ namespace Grocery.App.ViewModels
             _groceryListItemsService.Update(item);
             item.Product.Stock++;
             _productService.Update(item.Product);
-            OnGroceryListChanged(GroceryList); // Load will call UpdateTotalPrice
+            OnGroceryListChanged(GroceryList);
         }
+
 
         private void UpdateTotalPrice()
         {
-            TotalPrice = MyGroceryListItems.Sum(i => (i.Product?.Price ?? 0m) * i.Amount);
+            decimal sum = MyGroceryListItems.Sum(i => (i.Product?.Price ?? 0m) * i.Amount);
+            if (HasBonusCard)
+                TotalPrice = Math.Round(sum * 0.95m, 2);
+            else
+                TotalPrice = Math.Round(sum, 2);
         }
     }
 }

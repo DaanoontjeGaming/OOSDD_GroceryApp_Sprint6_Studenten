@@ -15,8 +15,6 @@ namespace Grocery.Core.Models
             ProductId = productId;
             Amount = amount;
         }
-
-        // Backing field + notifying property so UI updates when Product is set
         private Product product = new(0, "None", 0);
         public Product Product
         {
@@ -32,10 +30,8 @@ namespace Grocery.Core.Models
             }
         }
 
-        // Line total: unit price * amount
         public decimal TotalPrice => (Product?.Price ?? 0m) * Amount;
 
-        // When Amount changes (generated OnAmountChanged is called) notify TotalPrice
         partial void OnAmountChanged(int value)
         {
             OnPropertyChanged(nameof(TotalPrice));

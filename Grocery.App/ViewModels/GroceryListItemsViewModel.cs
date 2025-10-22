@@ -6,6 +6,7 @@ using Grocery.Core.Interfaces.Services;
 using Grocery.Core.Models;
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using System.Linq;
 
 namespace Grocery.App.ViewModels
 {
@@ -24,6 +25,10 @@ namespace Grocery.App.ViewModels
         [ObservableProperty]
         string myMessage;
 
+        [ObservableProperty]
+        decimal totalPrice = 0m;
+
+ 
         public GroceryListItemsViewModel(IGroceryListItemsService groceryListItemsService, IProductService productService, IFileSaverService fileSaverService)
         {
             _groceryListItemsService = groceryListItemsService;
@@ -37,6 +42,7 @@ namespace Grocery.App.ViewModels
             MyGroceryListItems.Clear();
             foreach (var item in _groceryListItemsService.GetAllOnGroceryListId(id)) MyGroceryListItems.Add(item);
             GetAvailableProducts();
+            UpdateTotalPrice();
         }
 
         private void GetAvailableProducts()
@@ -93,6 +99,7 @@ namespace Grocery.App.ViewModels
             GetAvailableProducts();
         }
 
+        
         [RelayCommand]
         public void IncreaseAmount(int productId)
         {
@@ -106,6 +113,7 @@ namespace Grocery.App.ViewModels
             OnGroceryListChanged(GroceryList);
         }
 
+        
         [RelayCommand]
         public void DecreaseAmount(int productId)
         {
@@ -117,6 +125,11 @@ namespace Grocery.App.ViewModels
             item.Product.Stock++;
             _productService.Update(item.Product);
             OnGroceryListChanged(GroceryList);
+        }
+
+        private void UpdateTotalPrice()
+        {
+            TotalPrice = MyGroceryListItems.Sum(i => (i.Product?.Price ?? 0m) * i.Amount);
         }
     }
 }

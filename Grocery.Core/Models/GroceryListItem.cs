@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.Generic;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Grocery.Core.Models
 {
@@ -15,6 +16,28 @@ namespace Grocery.Core.Models
             Amount = amount;
         }
 
-        public Product Product { get; set; } = new(0, "None", 0);
+        private Product product = new(0, "None", 0);
+        public Product Product
+        {
+            get => product;
+            set
+            {
+                if (!EqualityComparer<Product>.Default.Equals(product, value))
+                {
+                    product = value;
+                    OnPropertyChanged(nameof(Product));
+                    OnPropertyChanged(nameof(TotalPrice));
+                }
+            }
+        }
+
+        // Computed total price (unit price * amount)
+        public decimal TotalPrice => Product?.Price * Amount ?? 0m;
+
+        partial void OnAmountChanged(int value)
+        {
+            // Notify that the total changed when the amount changes
+            OnPropertyChanged(nameof(TotalPrice));
+        }
     }
 }

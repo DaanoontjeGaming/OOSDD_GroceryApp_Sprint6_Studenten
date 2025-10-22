@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Grocery.App.Views.BonusCardView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Bonuskaart">
+	<Shell.TitleView>
+		<Grid>
+			<Label Text="Bonuskaart" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center" />
+		</Grid>
+	</Shell.TitleView>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+			<Label Text="Druk op de onderstaande knop als u een bonuskaart abonnement wilt nemen." />
+			<Label Text="Een abonnement kost jaarlijks €149,99" />
+
+            <Button
+                Text="{Binding Price, StringFormat='{}Abonneer - {0:F2}&#x20AC;'}"
+                Command="{Binding BuyBonusCardCommand}"
+                IsEnabled="{Binding CanBuy}" />
+
+            <Label Text="{Binding InfoMessage}" TextColor="Green" />
+
+            <Label Text="Status" FontAttributes="Bold" />
+            <Label Text="{Binding HasBonusCard, StringFormat='Bonuskaart in bezit: {0}'}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

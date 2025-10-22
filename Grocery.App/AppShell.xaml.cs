@@ -1,4 +1,5 @@
 ﻿using Grocery.App.Views;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Grocery.App
 {
@@ -7,6 +8,9 @@ namespace Grocery.App
         public AppShell()
         {
             InitializeComponent();
+
+            BindingContext = null; 
+
             Routing.RegisterRoute(nameof(GroceryListItemsView), typeof(GroceryListItemsView));
             Routing.RegisterRoute(nameof(ProductView), typeof(ProductView));
             Routing.RegisterRoute(nameof(ChangeColorView), typeof(ChangeColorView));
@@ -16,6 +20,7 @@ namespace Grocery.App
             Routing.RegisterRoute(nameof(CategoriesView), typeof(CategoriesView));
             Routing.RegisterRoute(nameof(ProductCategoriesView), typeof(ProductCategoriesView));
             Routing.RegisterRoute(nameof(NewProductView), typeof(NewProductView));
+            Routing.RegisterRoute(nameof(BonusCardView), typeof(BonusCardView));
         }
     }
 }

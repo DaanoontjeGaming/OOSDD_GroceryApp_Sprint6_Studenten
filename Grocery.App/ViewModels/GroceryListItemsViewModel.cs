@@ -28,7 +28,6 @@ namespace Grocery.App.ViewModels
         [ObservableProperty]
         decimal totalPrice = 0m;
 
- 
         public GroceryListItemsViewModel(IGroceryListItemsService groceryListItemsService, IProductService productService, IFileSaverService fileSaverService)
         {
             _groceryListItemsService = groceryListItemsService;
@@ -99,7 +98,6 @@ namespace Grocery.App.ViewModels
             GetAvailableProducts();
         }
 
-        
         [RelayCommand]
         public void IncreaseAmount(int productId)
         {
@@ -110,10 +108,9 @@ namespace Grocery.App.ViewModels
             _groceryListItemsService.Update(item);
             item.Product.Stock--;
             _productService.Update(item.Product);
-            OnGroceryListChanged(GroceryList);
+            OnGroceryListChanged(GroceryList); // Load will call UpdateTotalPrice
         }
 
-        
         [RelayCommand]
         public void DecreaseAmount(int productId)
         {
@@ -124,7 +121,7 @@ namespace Grocery.App.ViewModels
             _groceryListItemsService.Update(item);
             item.Product.Stock++;
             _productService.Update(item.Product);
-            OnGroceryListChanged(GroceryList);
+            OnGroceryListChanged(GroceryList); // Load will call UpdateTotalPrice
         }
 
         private void UpdateTotalPrice()

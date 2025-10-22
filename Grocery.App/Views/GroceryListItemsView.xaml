@@ -35,19 +35,29 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*"/>
+                                    <!-- Name -->
                                     <ColumnDefinition Width="*"/>
+                                    <!-- Unit price -->
+                                    <ColumnDefinition Width="*"/>
+                                    <!-- Amount -->
+                                    <ColumnDefinition Width="*"/>
+                                    <!-- Line total -->
                                     <ColumnDefinition Width="20"/>
+                                    <!-- plus -->
                                     <ColumnDefinition Width="20"/>
+                                    <!-- minus -->
                                 </Grid.ColumnDefinitions>
                                 <Label Grid.Column="0" Text="{Binding Product.Name}" VerticalOptions="Center"/>
-                                <Label Grid.Column="1" Text="{Binding Amount}" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
-                                <Grid Grid.Column="2">
+                                <Label Grid.Column="1" Text="{Binding Product.Price, StringFormat='€{0:F2}'}" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
+                                <Label Grid.Column="2" Text="{Binding Amount}" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
+                                <Label Grid.Column="3" Text="{Binding TotalPrice, StringFormat='€{0:F2}'}" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
+                                <Grid Grid.Column="4">
                                     <Image Source="plus.png" WidthRequest="15" HeightRequest="15"/>
                                     <Grid.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GroceryListItemsViewModel}}, Path=IncreaseAmountCommand}" CommandParameter="{Binding ProductId}" />
                                     </Grid.GestureRecognizers>
                                 </Grid>
-                                <Grid Grid.Column="3">
+                                <Grid Grid.Column="5">
                                     <Image Source="min.png" WidthRequest="15" HeightRequest="15"/>
                                     <Grid.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GroceryListItemsViewModel}}, Path=DecreaseAmountCommand}" CommandParameter="{Binding ProductId}" />
@@ -57,8 +67,6 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-
-               
                 <Grid Padding="8" Margin="8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>

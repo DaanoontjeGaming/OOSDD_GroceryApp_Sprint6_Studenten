@@ -19,6 +19,7 @@ namespace Grocery.App.ViewModels
         private readonly IGroceryListItemsService _groceryListItemsService;
         private readonly IProductService _productService;
         private readonly IFileSaverService _fileSaverService;
+        private readonly GlobalViewModel _global;
         
         [ObservableProperty]
         bool hasBonusCard;
@@ -34,14 +35,29 @@ namespace Grocery.App.ViewModels
         [ObservableProperty]
         decimal totalPrice = 0m;
 
-        public GroceryListItemsViewModel(IGroceryListItemsService groceryListItemsService, IProductService productService, IFileSaverService fileSaverService)
+        public GroceryListItemsViewModel(IGroceryListItemsService groceryListItemsService, IProductService productService, IFileSaverService fileSaverService, GlobalViewModel global)
         {
             _groceryListItemsService = groceryListItemsService;
             _productService = productService;
             _fileSaverService = fileSaverService;
+            _global = global;
+
+            
+            HasBonusCard = _global.HasBonusCard;
+            _global.PropertyChanged += Global_PropertyChanged;
+
             MyGroceryListItems.CollectionChanged += MyGroceryListItems_CollectionChanged;
 
             Load(groceryList.Id);
+        }
+
+        private void Global_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(GlobalViewModel.HasBonusCard))
+            {
+                
+                HasBonusCard = _global.HasBonusCard;
+            }
         }
 
         private void Load(int id)
@@ -74,7 +90,6 @@ namespace Grocery.App.ViewModels
 
         partial void OnHasBonusCardChanged(bool value)
         {
-            HasBonusCard = true;
             UpdateTotalPrice();
             
         }

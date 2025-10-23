@@ -21,6 +21,10 @@
         <VerticalStackLayout Padding="20" Spacing="16">
 			<Label Text="Druk op de onderstaande knop als u een bonuskaart abonnement wilt nemen." />
 			<Label Text="Een abonnement kost jaarlijks €149,99" />
+            <Label Text="{Binding ExpiryDate, StringFormat='Uw bonuskaart wordt verlengd: {0:dd-MM-yyyy}'}"
+                   IsVisible="{Binding CanCancel}" />
+            <Label Text="{Binding ExpiryDate, StringFormat='Uw bonuskaart verloopt op {0:dd-MM-yyyy}'}"
+                   IsVisible="{Binding CanResume}" />
 
             <Button
                 Text="{Binding Price, StringFormat='{}Abonneer - {0:F2}&#x20AC;'}"
@@ -28,14 +32,16 @@
                 IsEnabled="{Binding CanBuy}"
                 IsVisible="{Binding CanBuy}"/>
             <Button
+                Text="Opzegging annuleren"
+                Command="{Binding BonusCardBehoudenCommand}"
+                IsEnabled="{Binding CanResume}"
+                IsVisible="{Binding CanResume}"/>
+            <Button
                 Text="Bonuskaart opzeggen"
-                Command="{Binding SellBonusCardCommand}"
-                IsEnabled="{Binding CanSell}"
-                IsVisible="{Binding CanSell}"/>
+                Command="{Binding BonusCardOpgezegdCommand}"
+                IsEnabled="{Binding CanCancel}"
+                IsVisible="{Binding CanCancel}"/>
             <Label Text="{Binding InfoMessage}" TextColor="Green" />
-
-            <Label Text="Status" FontAttributes="Bold" />
-            <Label Text="{Binding HasBonusCard, StringFormat='Bonuskaart in bezit: {0}'}" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

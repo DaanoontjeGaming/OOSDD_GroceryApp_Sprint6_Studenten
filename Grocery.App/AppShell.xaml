@@ -7,10 +7,13 @@
     Shell.FlyoutBehavior="Disabled"
     Title="GroceryApp">
 
-    <!-- Toolbar item rechtsboven: bindt aan GlobalViewModel.BonusStatus -->
     <Shell.ToolbarItems>
         <ToolbarItem
             Text="{Binding BonusStatus}"
+            Order="Primary"
+            Priority="0" />
+        <ToolbarItem
+            Text="{Binding OpgezegdStatus}"
             Order="Primary"
             Priority="0" />
     </Shell.ToolbarItems>

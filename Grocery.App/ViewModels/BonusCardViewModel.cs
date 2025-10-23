@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -22,6 +23,12 @@ namespace Grocery.App.ViewModels
         [ObservableProperty]
         bool hasBonusCard = false;
 
+        [ObservableProperty]
+        bool cardOpgezegd = false;
+
+        [ObservableProperty]
+        DateTime expiryDate = DateTime.Now.AddYears(1);
+
         public BonusCardViewModel(GlobalViewModel global)
         {
             Title = "Bonuskaart";
@@ -29,12 +36,20 @@ namespace Grocery.App.ViewModels
         }
 
         public bool CanBuy => !HasBonusCard;
-        public bool CanSell => HasBonusCard;
+        public bool CanCancel => HasBonusCard && !CardOpgezegd;
+        public bool CanResume => HasBonusCard && CardOpgezegd;
 
         partial void OnHasBonusCardChanged(bool value)
         {
             OnPropertyChanged(nameof(CanBuy));
-            OnPropertyChanged(nameof(CanSell));
+            OnPropertyChanged(nameof(CanCancel));
+            OnPropertyChanged(nameof(CanResume));
+        }
+
+        partial void OnCardOpgezegdChanged(bool value)
+        {
+            OnPropertyChanged(nameof(CanCancel));
+            OnPropertyChanged(nameof(CanResume));
         }
 
         [RelayCommand]
@@ -55,11 +70,33 @@ namespace Grocery.App.ViewModels
             HasBonusCard = true;
             _global.HasBonusCard = true;
 
-            InfoMessage = $"succesvol geabonneerd voor €{Price:F2}.";
+            
+            CardOpgezegd = false;
+            _global.CardOpgezegd = false;
+
+            ExpiryDate = DateTime.Now.AddYears(1);
+
+            InfoMessage = $"Succesvol geabonneerd voor €{Price:F2}.";
         }
 
         [RelayCommand]
-        public void SellBonusCard()
+        public void BonusCardBehouden()
+        {
+            if (_global?.Client == null)
+            {
+                InfoMessage = "Je moet ingelogd zijn om deze actie uit te voeren.";
+                return;
+            }
+
+           
+            CardOpgezegd = false;
+            _global.CardOpgezegd = false;
+
+            InfoMessage = "Uw bonuskaart zal automatisch worden verlengd op de aangegeven datum.";
+        }
+
+        [RelayCommand]
+        public void BonusCardOpgezegd()
         {
             if (_global?.Client == null)
             {
@@ -73,10 +110,11 @@ namespace Grocery.App.ViewModels
                 return;
             }
 
-            HasBonusCard = false;
-            _global.HasBonusCard = false;
+            
+            CardOpgezegd = true;
+            _global.CardOpgezegd = true;
 
-            InfoMessage = $"je abonnement is succesvol opgezegd.";
+            InfoMessage = $"Je abonnement is succesvol opgezegd.";
         }
     }
 }

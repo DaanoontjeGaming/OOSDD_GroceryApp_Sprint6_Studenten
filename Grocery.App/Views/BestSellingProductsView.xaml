@@ -9,6 +9,7 @@
     <Shell.TitleView>
         <Grid>
             <Label Text="Best verkochte producten" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center" />
+            
         </Grid>
     </Shell.TitleView>
 

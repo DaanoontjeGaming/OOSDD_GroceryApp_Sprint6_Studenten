@@ -32,4 +32,5 @@
             <ShellContent Title="Bonuskaart" ContentTemplate="{DataTemplate local:BonusCardView}" />
         </Tab>
     </TabBar>
+
 </Shell>

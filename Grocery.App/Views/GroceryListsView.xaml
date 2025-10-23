@@ -14,6 +14,7 @@
     <Shell.TitleView>
         <Grid>
             <Label Text="Boodschappenlijsten" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center" />
+            
         </Grid>
     </Shell.TitleView>
 

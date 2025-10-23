@@ -51,6 +51,8 @@ namespace Grocery.App.ViewModels
             }
 
             HasBonusCard = true;
+            _global.HasBonusCard = true;
+
             InfoMessage = $"succesvol geabonneerd voor €{Price:F2}.";
         }
     }

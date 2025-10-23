@@ -1,15 +1,16 @@
 ﻿using Grocery.App.Views;
+using Grocery.App.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Grocery.App
 {
     public partial class AppShell : Shell
     {
-        public AppShell()
+        public AppShell(GlobalViewModel global)
         {
             InitializeComponent();
 
-            BindingContext = null; 
+            BindingContext = global; 
 
             Routing.RegisterRoute(nameof(GroceryListItemsView), typeof(GroceryListItemsView));
             Routing.RegisterRoute(nameof(ProductView), typeof(ProductView));

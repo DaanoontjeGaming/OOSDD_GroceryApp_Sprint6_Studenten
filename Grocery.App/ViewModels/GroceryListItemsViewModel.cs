@@ -19,6 +19,7 @@ namespace Grocery.App.ViewModels
         private readonly IGroceryListItemsService _groceryListItemsService;
         private readonly IProductService _productService;
         private readonly IFileSaverService _fileSaverService;
+        
         [ObservableProperty]
         bool hasBonusCard;
         private string searchText = "";
@@ -38,8 +39,6 @@ namespace Grocery.App.ViewModels
             _groceryListItemsService = groceryListItemsService;
             _productService = productService;
             _fileSaverService = fileSaverService;
-
-            // subscribe to collection changes so total price updates when items change
             MyGroceryListItems.CollectionChanged += MyGroceryListItems_CollectionChanged;
 
             Load(groceryList.Id);
@@ -47,7 +46,6 @@ namespace Grocery.App.ViewModels
 
         private void Load(int id)
         {
-            // detach existing item handlers
             foreach (var item in MyGroceryListItems) item.PropertyChanged -= Item_PropertyChanged;
 
             MyGroceryListItems.Clear();
@@ -76,7 +74,9 @@ namespace Grocery.App.ViewModels
 
         partial void OnHasBonusCardChanged(bool value)
         {
+            HasBonusCard = true;
             UpdateTotalPrice();
+            
         }
 
         private void MyGroceryListItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
